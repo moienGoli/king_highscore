@@ -1,64 +1,61 @@
 package com.king;
 
+import com.king.model.HighScoreCalculationService;
 import com.king.model.Score;
+import com.king.model.ScoreStorageService;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 /**
  * Created by moien on 9/8/17.
  */
 public class Shoot {
 
-    private static Queue<Score> scores = new ConcurrentLinkedQueue<>();
-
+    private static ScoreStorageService storage = ScoreStorageService.getInstance();
+    private static HighScoreCalculationService board = HighScoreCalculationService.getInstance();
 
     public static void main(String[] args) {
 
+        createProducer(storage);
+        createProducer(storage);
+        createProducer(storage);
+        createObserver();
+        createObserver();
+        createObserver();
+
+    }
+
+    private static void createProducer(final ScoreStorageService storage) {
         new Thread(() -> {
             Timer timer = new Timer();
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-                    scores.add(new Score(
-                            ThreadLocalRandom.current().nextInt(1, 5 + 1),
+                    storage.addScore(new Score(
+                            ThreadLocalRandom.current().nextInt(1, 100),
                             ThreadLocalRandom.current().nextInt(1, 5 + 1),
                             ThreadLocalRandom.current().nextInt(1000, 5000)));
                 }
             };
             timer.schedule(task, 0, 1);
         }).run();
+    }
 
-
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-
-
-                int size = scores.size();
-
-                System.out.println("The size of scores is : " + size);
-
-                Score widowCat = new Score(
-                        ThreadLocalRandom.current().nextInt(1, 5 + 1),
-                        ThreadLocalRandom.current().nextInt(1, 5 + 1),
-                        ThreadLocalRandom.current().nextInt(4000, 5000));
-                Instant now = Instant.now();
-
-                Map<Integer, Optional<Score>> collect = scores.parallelStream().
-                        filter(element -> Duration.between(element.getCreationTime(), now).getSeconds() < 20).
-                        filter(element -> element.compareTo(widowCat) > 0).
-                        collect(Collectors.groupingByConcurrent(Score::hashCode, Collectors.maxBy(Comparator.comparing(Score::getScore))));
-
-
-                System.out.println(collect);
-            }
-        };
-        timer.schedule(task, 5000L, 100L);
+    private static void createObserver() {
+        new Thread(() -> {
+            Timer timer = new Timer();
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    int level = ThreadLocalRandom.current().nextInt(1, 5 + 1);
+                    List<Score> scores = board.getHighScoresListForLevel(level);
+//                    System.out.println("Scores for level " + level + " : " + scores);
+                }
+            };
+            timer.schedule(task, 0, 10);
+        }).run();
     }
 }

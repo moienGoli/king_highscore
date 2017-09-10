@@ -45,7 +45,7 @@ public class Score implements Comparable<Score> {
         if (other == null) {
             return 1;
         } else {
-            return Integer.compare(this.score, other.score);
+            return Integer.compare(other.score, this.score);
         }
 
     }
@@ -64,5 +64,9 @@ public class Score implements Comparable<Score> {
 
     public Instant getCreationTime() {
         return creationTime;
+    }
+
+    public String toString() {
+        return userId + ":" + score;
     }
 }

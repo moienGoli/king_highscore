@@ -1,7 +1,5 @@
 package com.king.model;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -14,49 +12,54 @@ import java.util.stream.Collectors;
  */
 public class HighScoreCalculationService {
 
-    private static final HighScoreCalculationService service = new HighScoreCalculationService();
-    private final ScoreStorageService scoreStore;
-    private Map<Integer, HashSizedSortedLinkedList<Score>> highScores = new HashMap<>();
-    private static final int dataRetentionSeconds = 10;
-    private static final int maxItemsPerLevel = 15;
+    private static HighScoreCalculationService service;
+    private ScoreStorageService scoreStore;
+    private Map<Integer, SortedSizedList<Score>> highScores = new HashMap<>();
+    private final int maxItemsPerLevel = 15;
+    private final int boardUpdateIntervalSeconds = 1;
 
 
     private HighScoreCalculationService() {
 
-        this.scoreStore = ScoreStorageService.getInstance();
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
-        executor.scheduleWithFixedDelay(service::collectAndUpdate, 0, 5, TimeUnit.SECONDS);
     }
 
     public static HighScoreCalculationService getInstance() {
+
+        if (service == null) {
+            service = new HighScoreCalculationService();
+            service.scoreStore = ScoreStorageService.getInstance();
+            service.runUpdateEngine();
+        }
         return service;
     }
 
+    private void runUpdateEngine() {
 
-    private void collectAndUpdate() {
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
+        executor.scheduleWithFixedDelay(service::collectAndUpdate, 0, boardUpdateIntervalSeconds, TimeUnit.SECONDS);
+    }
+
+    private int collectAndUpdate() {
 
         Queue<Score> scores = scoreStore.getScores();
-
-        Instant now = Instant.now();
         Collection<Optional<Score>> collected = scores.parallelStream().
-                filter(element -> Duration.between(element.getCreationTime(), now).getSeconds() < dataRetentionSeconds).
-                filter(element -> element.compareTo(getLevelLeastHighScore(element.getLevelId())) > 0).
+                filter(element -> element.compareTo(getLastHighScore(element.getLevelId())) > 0).
                 collect(Collectors.groupingByConcurrent(Score::hashCode, Collectors.maxBy(Comparator.comparing(Score::getScore)))).values();
 
         updateHighScoreBoard(collected);
-
+        return collected.size();
     }
 
     private void updateHighScoreBoard(Collection<Optional<Score>> collected) {
 
         Iterator<Optional<Score>> iterator = collected.iterator();
-        HashSizedSortedLinkedList<Score> levelHighScores;
+        SortedSizedList<Score> levelHighScores;
         Score userCurrentScore;
 
         while (iterator.hasNext()) {
             Score next = iterator.next().get();
             levelHighScores = getHighScoresForLevel(next.getLevelId());
-            userCurrentScore = levelHighScores.get(next);
+            userCurrentScore = getUserCurrentScore(levelHighScores, next);
             if (userCurrentScore != null) {
                 if (userCurrentScore.compareTo(next) < 1) {
                     levelHighScores.remove(userCurrentScore);
@@ -68,28 +71,47 @@ public class HighScoreCalculationService {
         }
     }
 
-    private Score getLevelLeastHighScore(int levelId) {
+    private Score getUserCurrentScore(List<Score> highScores, Score next) {
 
-        HashSizedSortedLinkedList<Score> levelHighScores = highScores.get(levelId);
-
-        if (levelHighScores.getSize() < maxItemsPerLevel) {
-            return levelHighScores.getLast();
-        } else {
-            return null;
+        for (Score score : highScores) {
+            if (score.hashCode() == next.hashCode()) {
+                return score;
+            }
         }
+        return null;
     }
 
-    private HashSizedSortedLinkedList<Score> getHighScoresForLevel(int level) {
+    private Score getLastHighScore(int levelId) {
 
-        HashSizedSortedLinkedList<Score> highScores = this.highScores.get(level);
+        SortedSizedList<Score> levelHighScores = highScores.get(levelId);
+        if (levelHighScores != null) {
+            if (levelHighScores.size() < maxItemsPerLevel) {
+                return null;
+            } else {
+                return levelHighScores.get(maxItemsPerLevel - 1);
+            }
+        }
+        return null;
+    }
+
+    private SortedSizedList<Score> getHighScoresForLevel(int level) {
+
+        SortedSizedList<Score> highScores = this.highScores.get(level);
         if (highScores == null) {
-            this.highScores.put(level, new HashSizedSortedLinkedList<>(maxItemsPerLevel));
+            highScores = new SortedSizedList<>(maxItemsPerLevel);
+            this.highScores.put(level, highScores);
         }
         return highScores;
     }
 
     public List<Score> getHighScoresListForLevel(int level) {
-        return highScores.get(level).getList();
+
+        SortedSizedList<Score> highScores = this.highScores.get(level);
+        if (highScores != null) {
+            return highScores;
+        } else {
+            return new ArrayList<>();
+        }
     }
 }
 
