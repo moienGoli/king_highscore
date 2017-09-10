@@ -3,8 +3,8 @@ package com.king.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
@@ -21,12 +21,20 @@ public class HighScoreServiceWithLocking {
         ConcurrentSkipListSet<Score> scores = scoreBoard.get(score.getLevelId());
         scores.removeIf((e) -> e.getUserId() == score.getUserId() && e.getScore() <= score.getScore());
 
-        if (!scores.contains(score)) {
+        if (!contains(scores,score)) {
             scores.add(score);
         }
         if (scores.size() > maxItems) {
             scores.pollLast();
         }
+    }
+
+    private boolean contains(Set<Score> set, Score score) {
+        for (Score sc : set) {
+            if (sc.getUserId() == score.getUserId())
+                return true;
+        }
+        return false;
     }
 
     private void initScoresForLevelIfNeeded(int level) {

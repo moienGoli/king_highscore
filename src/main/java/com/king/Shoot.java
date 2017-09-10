@@ -20,11 +20,11 @@ public class Shoot {
 
 
         makeScoresFly();
-//        makeScoresFly();
-//        makeScoresFly();
-//        makeScoresFly();
-//        makeScoresFly();
-//        makeScoresFly();
+        makeScoresFly();
+        makeScoresFly();
+        makeScoresFly();
+        makeScoresFly();
+        makeScoresFly();
         createObserver();
         createObserver();
 
@@ -55,7 +55,7 @@ public class Shoot {
                     System.out.println(highScoreServiceWithLocking.getHighScoresForLevel(3));
                 }
             };
-            timer.schedule(task, 500, 500);
+            timer.schedule(task, 50, 50);
         }).run();
     }
 }
