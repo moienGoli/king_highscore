@@ -25,21 +25,42 @@ public class Score implements Comparable<Score> {
         this.creationTime = Instant.now();
     }
 
+    @Override
+    public boolean equals(Object o) {
 
-    public int hashCode() {
-        return userId * 31 + levelId;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Score score = (Score) o;
+
+        if (userId != score.userId) return false;
+        return levelId == score.levelId;
+
     }
 
-    public boolean equals(Object other) {
+//    @Override
+//    public int hashCode() {
+//        int result = userId;
+//        result = 31 * result + levelId;
+//        return result;
+//    }
 
-        if (other.hashCode() == this.hashCode()) {
-            if (this.score == ((Score) other).score) {
-                return true;
-            }
-        }
-        return false;
-    }
 
+    //
+//    public int hashCode() {
+//        return userId * 31 + levelId * 17;
+//    }
+
+//    public boolean equals(Object other) {
+//
+//        if (other.hashCode() == this.hashCode()) {
+//            if (this.score == ((Score) other).score) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//
     public int compareTo(Score other) {
 
         if (other == null) {
