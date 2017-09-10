@@ -23,8 +23,8 @@ public class Shoot {
         createProducer(storage);
         createProducer(storage);
         createObserver();
-        createObserver();
-        createObserver();
+//        createObserver();
+//        createObserver();
 
     }
 
@@ -37,7 +37,7 @@ public class Shoot {
                     storage.addScore(new Score(
                             ThreadLocalRandom.current().nextInt(1, 100),
                             ThreadLocalRandom.current().nextInt(1, 5 + 1),
-                            ThreadLocalRandom.current().nextInt(1000, 5000)));
+                            ThreadLocalRandom.current().nextInt(0, 5000)));
                 }
             };
             timer.schedule(task, 0, 1);
@@ -50,12 +50,28 @@ public class Shoot {
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-                    int level = ThreadLocalRandom.current().nextInt(1, 5 + 1);
-                    List<Score> scores = board.getHighScoresListForLevel(level);
-//                    System.out.println("Scores for level " + level + " : " + scores);
+                    List<Score> scores;
+                    scores = board.getHighScoresListForLevel(1);
+                    System.out.println("Scores for level " + 1 + " : " + scores);
+
+                    scores = board.getHighScoresListForLevel(2);
+                    System.out.println("Scores for level " + 2 + " : " + scores);
+
+                    scores = board.getHighScoresListForLevel(3);
+                    System.out.println("Scores for level " + 3 + " : " + scores);
+
+                    scores = board.getHighScoresListForLevel(4);
+                    System.out.println("Scores for level " + 4 + " : " + scores);
+
+                    scores = board.getHighScoresListForLevel(5);
+                    System.out.println("Scores for level " + 5 + " : " + scores);
+
+                    System.out.println("----------------------------------------------------------------");
+                    System.out.println("++++++++++++++++++||||||||||||||||||||||||||++++++++++++++++++++");
+                    System.out.println("----------------------------------------------------------------");
                 }
             };
-            timer.schedule(task, 0, 10);
+            timer.schedule(task, 500, 500);
         }).run();
     }
 }
