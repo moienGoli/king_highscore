@@ -43,15 +43,4 @@ public class ScoreStorageService {
     public Set<Integer> getLevels() {
         return levels;
     }
-
-    //    public Collection<Optional<Score>> groupScoresByUserMaxForLevel(int level, int minScore) {
-//
-//        Collection<Optional<Score>> collected = store.retrieveAll().parallelStream().
-//                filter(element -> element.getLevelId() == level).
-//                filter(element -> element.getScore() > minScore).sorted().
-//                collect(Collectors.groupingBy(Score::getUserId,
-//                        Collectors.maxBy(Comparator.comparing(Score::getScore)))).values();
-//        return collected;
-//    }
-
 }

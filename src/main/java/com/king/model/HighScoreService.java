@@ -46,5 +46,8 @@ public class HighScoreService {
         }
     }
 
+    public List getHighScoresForLevel(int level){
+        return scoreBoard.get(level);
+    }
 
 }

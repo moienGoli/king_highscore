@@ -1,14 +1,12 @@
 package com.king;
 
+import com.king.model.HighScoreServiceWithLocking;
 import com.king.model.Score;
 import com.king.storage.SimpleStorage;
 
-import java.util.*;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by moien on 9/8/17.
@@ -16,24 +14,31 @@ import java.util.stream.Stream;
 public class Shoot {
 
     private static SimpleStorage<Score> storage = new SimpleStorage<>();
+    private static HighScoreServiceWithLocking highScoreServiceWithLocking = new HighScoreServiceWithLocking();
 
     public static void main(String[] args) {
 
 
-        createProducer(storage);
+        makeScoresFly();
+//        makeScoresFly();
+//        makeScoresFly();
+//        makeScoresFly();
+//        makeScoresFly();
+//        makeScoresFly();
+        createObserver();
         createObserver();
 
     }
 
-    private static void createProducer(final SimpleStorage storage) {
+    private static void makeScoresFly() {
         new Thread(() -> {
             Timer timer = new Timer();
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-                    storage.add(new Score(
-                            ThreadLocalRandom.current().nextInt(1, 100),
-                            ThreadLocalRandom.current().nextInt(1, 5 + 1),
+                    highScoreServiceWithLocking.addScore(new Score(
+                            ThreadLocalRandom.current().nextInt(1, 5),
+                            ThreadLocalRandom.current().nextInt(1, 5),
                             ThreadLocalRandom.current().nextInt(0, 5000)));
                 }
             };
@@ -47,33 +52,10 @@ public class Shoot {
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-
-
-                    Map<Integer, List<Score>> scoreBoard = new HashMap<>();
-                    List a = new ArrayList(
-                            Arrays.asList(
-                                    new Score(1, 3, 4998),
-                                    new Score(2, 3, 4995),
-                                    new Score(7, 3, 5003),
-                                    new Score(1, 3, 5000))
-                    );
-                    scoreBoard.put(3, a);
-
-
-                    List<Score> collected = storage.retrieveAll().parallelStream().
-                            filter(element -> element.getLevelId() == 3).
-                            filter(element -> element.getScore() > 4990).
-                            collect(Collectors.toMap(Score::getUserId, Function.identity(),
-                                            BinaryOperator.maxBy(Comparator.comparingInt(Score::getScore)))
-                            ).values().stream().collect(Collectors.toList());
-
-                    List<Score> scores =
-                            Stream.concat(scoreBoard.get(3).stream(), collected.stream()).sorted().distinct().limit(15).collect(Collectors.toList());
-
-                    System.out.println(scores);
+                    System.out.println(highScoreServiceWithLocking.getHighScoresForLevel(3));
                 }
             };
-            timer.schedule(task, 15000, 15000);
+            timer.schedule(task, 500, 500);
         }).run();
     }
 }
