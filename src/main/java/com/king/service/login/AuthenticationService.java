@@ -15,9 +15,9 @@ import java.time.Instant;
 public class AuthenticationService {
 
 
-    private final static int secondsToLive = 600;
+    private final int secondsToLive = 600;
     private final static AuthenticationService authService = new AuthenticationService();
-    public final String separator = "&TIME&";
+    private final String separator = "&TIME&";
 
     public static AuthenticationService getInstance() {
         return authService;
@@ -76,4 +76,8 @@ public class AuthenticationService {
         return token;
     }
 
+    //used only for testing purposes
+    public String getSeparator() {
+        return separator;
+    }
 }
