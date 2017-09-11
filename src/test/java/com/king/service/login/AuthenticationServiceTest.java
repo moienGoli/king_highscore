@@ -22,6 +22,24 @@ public class AuthenticationServiceTest {
     @Test
     public void testGetUserID() throws Exception {
 
+        Instant now = Instant.now();
+        int userID = 123584;
+        String sessionToken = service.doLogin(userID);
+        assertTrue(service.getUserID(sessionToken) == userID);
+
+        expectedEx.expect(AppException.class);
+        expectedEx.expectMessage("expired");
+        String token = userID + service.separator + (now.getEpochSecond() - 100);
+        String expiredSessionKey = CryptographyService.getInstance().encrypt(token);
+        service.getUserID(expiredSessionKey);
+    }
+
+    @Test
+    public void testInvalidSessionKey(){
+
+        expectedEx.expect(AppException.class);
+        expectedEx.expectMessage("Crypt exception");
+        service.getUserID("Non Base64 String");
     }
 
     @Test
