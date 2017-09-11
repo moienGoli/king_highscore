@@ -1,4 +1,4 @@
-package com.king.model;
+package com.king.service.highscore;
 
 import java.time.Instant;
 
@@ -38,29 +38,6 @@ public class Score implements Comparable<Score> {
 
     }
 
-//    @Override
-//    public int hashCode() {
-//        int result = userId;
-//        result = 31 * result + levelId;
-//        return result;
-//    }
-
-
-    //
-//    public int hashCode() {
-//        return userId * 31 + levelId * 17;
-//    }
-
-//    public boolean equals(Object other) {
-//
-//        if (other.hashCode() == this.hashCode()) {
-//            if (this.score == ((Score) other).score) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//
     public int compareTo(Score other) {
 
         if (other == null) {
@@ -88,6 +65,6 @@ public class Score implements Comparable<Score> {
     }
 
     public String toString() {
-        return userId + ":" + score;
+        return userId + "=" + score;
     }
 }

@@ -1,0 +1,85 @@
+package com.king.service.highscore;
+
+import com.king.storage.ScoreStorageService;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * OPTIMISTIC APPROACH
+ * This can be described as below:
+ * - Scores are stored in an stream.
+ * - every few seconds or so, will run a query on the stream and find the candidates,
+ *                          candidates: whom are not expired and they are higher than level's minimum highscore
+ * - a list of candidates will be merged with current high scores of the level and result will be sorted and duplicates will get removed.
+ * - the collect&update operation will run periodically.
+ *
+ * The benefits of this approach could be:
+ * - The score receive/store and process are separated, so it is much easier to scale based on where the pressure is.
+ * - When receiving the score, the least possible operation is being done, so the response time in this section will not be much affected
+ *                           by number of requests
+ * - The process of updating the HighscoreList will not be affected by number of requests.
+ * - The process of updating the HighscoreList is not a case of concurrency and and corresponding challenges
+ *
+ * But there are some down points for this approach:
+ * - There might be a memory problem in DataStore if the consumer became lazy.
+ * - There might be an 'UnNotice Score' problem. UnNotices scores are those who have wiped out before even getting processed.
+ * - This approach may not be as accurate as the HighScoreServiceWithLocking approach, but it is eventually consistent and most of the times
+ *                                                                                       it is as consistent as HighScoreServiceWithLocking.
+ *
+ * In conclusion this approach should be configured delicately and there should be a back pressure mechanism to avoid outOfMemory exception in
+ * case of insane load.
+ *
+ *
+ *
+ * Created by moien on 9/10/17.
+ */
+public class OptimisticHighScoreService implements HighScoreService {
+
+    private final ScoreStorageService storageService;
+    private final Map<Integer, List<Score>> scoreBoard = new HashMap<>();
+    private final int maxSize = 15;
+
+    public OptimisticHighScoreService(ScoreStorageService storageService) {
+        this.storageService = storageService;
+    }
+
+    protected void update() {
+
+        for (Integer level : storageService.getLevels()) {
+            initScoreBoardIfNecessary(level);
+            List<Score> newEntries = storageService.mapScoresByUserMaxForLevel(level, getLastScoreFromBoard(level));
+
+            List<Score> scores = Stream.concat(scoreBoard.get(level).stream(), newEntries.stream())
+                    .sorted().distinct().limit(maxSize).collect(Collectors.toList());
+
+            scoreBoard.put(level, scores);
+        }
+
+    }
+
+    private int getLastScoreFromBoard(int level) {
+        return ((LinkedList<Score>) scoreBoard.get(level)).getLast().getScore();
+    }
+
+    private void initScoreBoardIfNecessary(Integer level) {
+
+        if (!scoreBoard.containsKey(level)) {
+            scoreBoard.put(level, new LinkedList<>());
+        }
+    }
+
+    public List getHighScoresForLevel(int level) {
+        return scoreBoard.get(level);
+    }
+
+    @Override
+    public void addScore(Score score) {
+        storageService.addScore(score);
+    }
+
+}
