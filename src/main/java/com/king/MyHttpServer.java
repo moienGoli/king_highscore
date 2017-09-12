@@ -12,7 +12,7 @@ package com.king;
 
 import com.king.exception.AppException;
 import com.king.service.highscore.HighScoreService;
-import com.king.service.highscore.HighScoreServiceWithLocking;
+import com.king.service.highscore.HighScoreServiceFactory;
 import com.king.service.highscore.Score;
 import com.king.service.logger.Logger;
 import com.king.service.login.AuthenticationService;
@@ -32,7 +32,7 @@ public class MyHttpServer {
 
 
     private static final HTTPServerURIHelper helper = new HTTPServerURIHelper();
-    private static final HighScoreService highscoreService = new HighScoreServiceWithLocking(15);
+    private static final HighScoreService highscoreService = HighScoreServiceFactory.getInstance().getHighScoreService(15, 3);
     private static final AuthenticationService auth = new AuthenticationService(new CryptographyService());
 
     public static void main(String[] args) throws Exception {
@@ -45,7 +45,7 @@ public class MyHttpServer {
 
     private static class RequestHandler implements HttpHandler {
 
-        private final int sessionKeySecondsToLive = 600;
+        private static final int SESSION_KEY_TTL_SECONDS = 600;
 
         public void handle(HttpExchange http) throws IOException {
 
@@ -81,7 +81,7 @@ public class MyHttpServer {
         private String handleLoginRequest(String uri) {
 
             int userId = helper.getUserIDFromLoginURI(uri);
-            return auth.doLogin(userId, sessionKeySecondsToLive);
+            return auth.doLogin(userId, SESSION_KEY_TTL_SECONDS);
         }
 
         private String handleHighScoreRequest(String uri) {

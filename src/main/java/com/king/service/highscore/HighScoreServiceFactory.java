@@ -22,8 +22,6 @@ public class HighScoreServiceFactory {
 
 
     private OptimisticHighScoreService optimisticService;
-    private HighScoreServiceWithLocking lockingService;
-    private ScheduledExecutorService executor;
     private static final HighScoreServiceFactory FACTORY = new HighScoreServiceFactory();
 
     public static HighScoreServiceFactory getInstance() {
@@ -33,42 +31,24 @@ public class HighScoreServiceFactory {
     private HighScoreServiceFactory() {
     }
 
-    public HighScoreService getHighScoreService(FactoryParam param) {
+    public HighScoreService getHighScoreService(int maxItems, int ttlSeconds) {
 
-        if(optimisticService != null || lockingService != null){
+        if (optimisticService != null) {
             throw new AppException("NOT PERMITTED.");
         }
 
-        if (param.MODE != null && param.MODE.equals(RunMode.OPTIMISTIC)) {
-            ScoreStorageService scoreStorageService = new ScoreStorageService(new SimpleStorage<>(), param.TTL);
-            optimisticService = new OptimisticHighScoreService(scoreStorageService, param.MAX_ITEMS);
-            scheduleExecutor(optimisticService, scoreStorageService, param);
-            return optimisticService;
-        } else {
-            lockingService = new HighScoreServiceWithLocking(param.MAX_ITEMS);
-            return lockingService;
-        }
+        ScoreStorageService scoreStorageService = new ScoreStorageService(new SimpleStorage<>(), ttlSeconds);
+        optimisticService = new OptimisticHighScoreService(scoreStorageService, maxItems);
+        scheduleExecutor(optimisticService, scoreStorageService, ttlSeconds);
+        return optimisticService;
+
     }
 
-    private void scheduleExecutor(OptimisticHighScoreService highScoreService, ScoreStorageService storageService, FactoryParam param) {
+    private void scheduleExecutor(OptimisticHighScoreService highScoreService, ScoreStorageService storageService, int ttl) {
 
-        executor = Executors.newScheduledThreadPool(5);
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
         executor.scheduleWithFixedDelay(highScoreService::update, 0, 100, TimeUnit.MILLISECONDS);
-        executor.scheduleWithFixedDelay(() -> storageService.retireData(3000), 0, param.TTL, TimeUnit.SECONDS);
+        executor.scheduleWithFixedDelay(() -> storageService.retireData(3000), 0, ttl, TimeUnit.SECONDS);
     }
 
-    class FactoryParam {
-
-        final int MAX_ITEMS;
-        final int TTL;
-        final RunMode MODE;
-
-        FactoryParam(int max_items, int ttl, RunMode mode) {
-            MAX_ITEMS = max_items;
-            TTL = ttl;
-            MODE = mode;
-        }
-    }
-
-    enum RunMode {OPTIMISTIC, LOCKING}
 }
