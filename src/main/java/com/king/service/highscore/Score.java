@@ -1,7 +1,5 @@
 package com.king.service.highscore;
 
-import java.time.Instant;
-
 /**
  * Encapsulates information of what we call score:
  * - userId
@@ -15,14 +13,12 @@ public class Score implements Comparable<Score> {
     private final int userId;
     private final int levelId;
     private final int score;
-    private final Instant creationTime;
 
     public Score(int userId, int levelId, int score) {
 
         this.userId = userId;
         this.levelId = levelId;
         this.score = score;
-        this.creationTime = Instant.now();
     }
 
     @Override
@@ -33,19 +29,28 @@ public class Score implements Comparable<Score> {
 
         Score score = (Score) o;
 
-        if (userId != score.userId) return false;
-        return levelId == score.levelId;
+        return userId == score.userId && levelId == score.levelId;
 
     }
 
+    /**
+     * if two scores are from two different users but their score number are the same, then onr will be returned.
+     * but if two equal score numbers are from same the user, zero will be returned.
+     * in other cases the result of two score number comparison will be returned
+     */
     public int compareTo(Score other) {
 
         if (other == null) {
             return 1;
         } else {
-            return Integer.compare(other.score, this.score);
+            int scoreCompare = Integer.compare(other.score, this.score);
+            if (scoreCompare == 0) {
+                if (this.userId != other.userId) {
+                    return 1;
+                }
+            }
+            return scoreCompare;
         }
-
     }
 
     public int getScore() {
@@ -58,10 +63,6 @@ public class Score implements Comparable<Score> {
 
     public int getUserId() {
         return userId;
-    }
-
-    public Instant getCreationTime() {
-        return creationTime;
     }
 
     public String toString() {

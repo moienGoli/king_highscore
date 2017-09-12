@@ -30,7 +30,7 @@ public class HighScoreServiceWithLocking implements HighScoreService {
 
         initScoresForLevelIfNeeded(score.getLevelId());
         ConcurrentSkipListSet<Score> scores = scoreBoard.get(score.getLevelId());
-        scores.removeIf(e -> e.getUserId() == score.getUserId() && e.getScore() <= score.getScore());
+        scores.removeIf(e -> e.getUserId() == score.getUserId() && e.getScore() < score.getScore());
 
         if (!contains(scores, score)) {
             scores.add(score);

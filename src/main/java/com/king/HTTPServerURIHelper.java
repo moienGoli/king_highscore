@@ -23,7 +23,7 @@ public class HTTPServerURIHelper {
             return ServiceName.HIGHSCORE;
         } else if (uri.contains("score")) {
             return ServiceName.SCORE;
-        } else if (uri.contains("score")) {
+        } else if (uri.contains("login")) {
             return ServiceName.LOGIN;
         }
         return null;
