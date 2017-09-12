@@ -2,7 +2,9 @@ package com.king.service.highscore;
 
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
@@ -24,18 +26,10 @@ public class HighScoreServiceWithLockingTest {
     public void testAddScoreWithFixedInputAndExpectedResult() throws Exception {
 
         int maxItems = 15;
+        TestDataProvider dataProvider = new TestDataProvider();
         HighScoreServiceWithLocking highScoreService = new HighScoreServiceWithLocking(maxItems);
 
-        List<Integer> scores = new ArrayList<>(Arrays.asList(5, 2, 12, 1, 1, 18, 15, 12, 13, 17, 3, 11, 14, 22, 21));
-        List<Integer> levelIds = new ArrayList<>(Arrays.asList(1, 1, 2, 1, 2, 2, 3, 3, 2, 1, 2, 3, 3, 3, 3));
-        List<Integer> userIds = new ArrayList<>(Arrays.asList(12, 1, 2, 5, 12, 8, 12, 13, 5, 9, 9, 13, 20, 20, 20));
-
-        Map<Integer, List> expectedResult = new HashMap<>();
-        expectedResult.put(1, Arrays.asList("9=17", "12=5", "1=2", "5=1"));
-        expectedResult.put(2, Arrays.asList("8=18", "5=13", "2=12", "9=3", "12=1"));
-        expectedResult.put(3, Arrays.asList("20=22", "12=15", "13=12"));
-
-        List<Score> scoreList = createScoreList(userIds, levelIds, scores);
+        List<Score> scoreList = dataProvider.scoreList;
 
 
         scoreList.forEach(highScoreService::addScore);
