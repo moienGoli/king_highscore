@@ -1,6 +1,5 @@
 package com.king.service.login;
 
-import com.king.service.login.CryptographyService;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -10,14 +9,13 @@ import static org.junit.Assert.assertTrue;
  * Created by moien
  * tests CryptographyService.java
  */
-public class CryptographyServiceTest{
-
-    private String stringToCrypt = "ILikeBigHearts!!!AndICannotLie,YouOtherBrothersCannotDeny";
+public class CryptographyServiceTest {
 
     @Test
     public void test() throws Exception {
 
-        CryptographyService cryptService = CryptographyService.getInstance();
+        CryptographyService cryptService = new CryptographyService();
+        String stringToCrypt = "ILikeBigHearts!!!AndICannotLie";
         String encrypted = cryptService.encrypt(stringToCrypt);
 
         assertTrue(stringToCrypt.equals(cryptService.decrypt(encrypted)));

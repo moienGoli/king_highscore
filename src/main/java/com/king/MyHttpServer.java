@@ -10,10 +10,13 @@ package com.king;
  * Created by moien on 9/8/17.
  */
 
+import com.king.exception.AppException;
 import com.king.service.highscore.HighScoreService;
 import com.king.service.highscore.HighScoreServiceWithLocking;
 import com.king.service.highscore.Score;
+import com.king.service.logger.Logger;
 import com.king.service.login.AuthenticationService;
+import com.king.service.login.CryptographyService;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -28,9 +31,9 @@ import static com.king.HTTPServerURIHelper.ServiceName;
 public class MyHttpServer {
 
 
-    private static HTTPServerURIHelper helper = new HTTPServerURIHelper();
-    private static HighScoreService highscoreService = HighScoreServiceWithLocking.getInstance();
-
+    private static final HTTPServerURIHelper helper = new HTTPServerURIHelper();
+    private static final HighScoreService highscoreService = new HighScoreServiceWithLocking(15);
+    private static final AuthenticationService auth = new AuthenticationService(new CryptographyService());
 
     public static void main(String[] args) throws Exception {
 
@@ -41,19 +44,32 @@ public class MyHttpServer {
     }
 
     private static class RequestHandler implements HttpHandler {
+
+        private final int sessionKeySecondsToLive = 600;
+
         public void handle(HttpExchange http) throws IOException {
 
             String uri = http.getRequestURI().toString();
-            HTTPServerURIHelper.ServiceName service = helper.getService(uri);
             String response = "";
             int responseCode = 200;
 
-            if (service.equals(ServiceName.SCORE)) {
-                handleScorePost(http, uri);
-            } else if (service.equals(ServiceName.HIGHSCORE)) {
-                response = handleHighScoreRequest(uri);
-            } else if (service.equals(ServiceName.LOGIN)) {
-                response = handleLoginRequest(uri);
+            try {
+                HTTPServerURIHelper.ServiceName service = helper.getService(uri);
+                if (service.equals(ServiceName.SCORE)) {
+                    handleScorePost(http, uri);
+                } else if (service.equals(ServiceName.HIGHSCORE)) {
+                    response = handleHighScoreRequest(uri);
+                } else if (service.equals(ServiceName.LOGIN)) {
+                    response = handleLoginRequest(uri);
+                }
+            } catch (AppException e) {
+                Logger.log(e.getMessage());
+                responseCode = 400;
+                response = e.getMessage();
+            } catch (Exception e) {
+                Logger.log(e.getMessage());
+                responseCode = 500;
+                response = e.getMessage();
             }
 
             http.sendResponseHeaders(responseCode, response.length());
@@ -65,7 +81,7 @@ public class MyHttpServer {
         private String handleLoginRequest(String uri) {
 
             int userId = helper.getUserIDFromLoginURI(uri);
-            return AuthenticationService.getInstance().doLogin(userId);
+            return auth.doLogin(userId, sessionKeySecondsToLive);
         }
 
         private String handleHighScoreRequest(String uri) {
@@ -78,7 +94,7 @@ public class MyHttpServer {
 
             int levelID = helper.getLevelIDFromScorePostURI(uri);
             String sessionKey = helper.getSessionKeyFromScorePostURI(uri);
-            int userID = AuthenticationService.getInstance().getUserID(sessionKey);
+            int userID = auth.getUserID(sessionKey);
             Scanner s = new Scanner(t.getRequestBody());
             int score = 0;
             if (s.hasNext()) {

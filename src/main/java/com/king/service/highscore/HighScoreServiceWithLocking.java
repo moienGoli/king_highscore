@@ -18,23 +18,19 @@ import java.util.concurrent.ConcurrentSkipListSet;
  */
 public class HighScoreServiceWithLocking implements HighScoreService {
 
-    private final static HighScoreServiceWithLocking service = new HighScoreServiceWithLocking();
     private final Map<Integer, ConcurrentSkipListSet<Score>> scoreBoard = new ConcurrentHashMap<>();
-    private final int maxItems = 15;
+    private final int maxItems;
 
 
-    public static HighScoreServiceWithLocking getInstance() {
-        return service;
-    }
-
-    private HighScoreServiceWithLocking() {
+    HighScoreServiceWithLocking(int maxItems) {
+        this.maxItems = maxItems;
     }
 
     public void addScore(Score score) {
 
         initScoresForLevelIfNeeded(score.getLevelId());
         ConcurrentSkipListSet<Score> scores = scoreBoard.get(score.getLevelId());
-        scores.removeIf((e) -> e.getUserId() == score.getUserId() && e.getScore() <= score.getScore());
+        scores.removeIf(e -> e.getUserId() == score.getUserId() && e.getScore() <= score.getScore());
 
         if (!contains(scores, score)) {
             scores.add(score);
@@ -55,7 +51,7 @@ public class HighScoreServiceWithLocking implements HighScoreService {
     private void initScoresForLevelIfNeeded(int level) {
 
         if (!scoreBoard.containsKey(level)) {
-            scoreBoard.put(level, new ConcurrentSkipListSet<Score>());
+            scoreBoard.put(level, new ConcurrentSkipListSet<>());
         }
     }
 
@@ -69,8 +65,4 @@ public class HighScoreServiceWithLocking implements HighScoreService {
         return result;
     }
 
-    //used only for testing purposes
-    public int getMaxItems() {
-        return maxItems;
-    }
 }

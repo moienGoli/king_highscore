@@ -1,6 +1,7 @@
 package com.king.service.login;
 
 import com.king.exception.AppException;
+import com.king.service.logger.Logger;
 
 import java.time.Instant;
 
@@ -15,13 +16,13 @@ import java.time.Instant;
 public class AuthenticationService {
 
 
-    private final int secondsToLive = 600;
-    private final static AuthenticationService authService = new AuthenticationService();
-    private final String separator = "&TIME&";
+    private static final String SEPARATOR = "&TIME&";
+    private final CryptographyService cryptService;
 
-    public static AuthenticationService getInstance() {
-        return authService;
+    public AuthenticationService(CryptographyService cryptographyService) {
+        this.cryptService = cryptographyService;
     }
+
 
     /**
      * Decrypt the token and extract the userID from it.
@@ -32,8 +33,8 @@ public class AuthenticationService {
      */
     public int getUserID(String token) {
         try {
-            String user = CryptographyService.getInstance().decrypt(token);
-            String[] split = user.split(separator);
+            String user = cryptService.decrypt(token);
+            String[] split = user.split(SEPARATOR);
             long expirationEpoch = Long.parseLong(split[1]);
             if (Instant.now().getEpochSecond() > expirationEpoch) {
                 throw new AppException("Session has expired");
@@ -49,35 +50,30 @@ public class AuthenticationService {
     /**
      * Creates a token from userID with embedded expiration time using CryptographyService.
      *
-     * @param userID user id which is an unsigned integer value
+     * @param userID        user id which is an unsigned integer value
+     * @param secondsToLive number of seconds that the sessionKey will be active
      * @return session key
      */
-    public String doLogin(int userID) {
+    public String doLogin(int userID, int secondsToLive) {
 
         if (userID < 0) {
             throw new AppException("UserID can not be negative");
         }
-        return doLogin(String.valueOf(userID));
+        Logger.log("Login for user: " + userID);
+        return doLogin(String.valueOf(userID), secondsToLive);
     }
 
-    private AuthenticationService() {
-    }
 
-    private String doLogin(String userID) {
+    private String doLogin(String userID, int secondsToLive) {
 
         String token = createTokenWithExpirationTime(userID, secondsToLive);
-        return CryptographyService.getInstance().encrypt(token);
+        return cryptService.encrypt(token);
     }
 
     private String createTokenWithExpirationTime(String userID, int secondsToLive) {
 
         Instant expireTime = Instant.now().plusSeconds(secondsToLive);
-        String token = userID + separator + expireTime.getEpochSecond();
-        return token;
+        return userID + SEPARATOR + expireTime.getEpochSecond();
     }
 
-    //used only for testing purposes
-    public String getSeparator() {
-        return separator;
-    }
 }

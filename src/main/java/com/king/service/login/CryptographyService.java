@@ -14,25 +14,20 @@ import java.util.Base64;
 
 /**
  * provides two way encryption with base64.
- *
+ * <p>
  * Created by moien on 9/11/17.
  */
 
 public class CryptographyService {
 
-    private static final CryptographyService cryptService = new CryptographyService();
-    private final char[] PASSWORD = "Go2y$MarAChOZa2DMa2daRPas$imo2NShoDValICha2rENabo2DE".toCharArray();
     private static final byte[] SALT = {
             (byte) 0xdd, (byte) 0x54, (byte) 0x40, (byte) 0x11,
             (byte) 0xde, (byte) 0x13, (byte) 0x58, (byte) 0x23,
     };
 
-    public static CryptographyService getInstance() {
-        return cryptService;
-    }
+    private static final String PBE_MD5_DES = "PBEWithMD5AndDES";
+    private static final char[] PASSWORD_PHRASE = "Go2y$MarAChOZa2DMa2daRPas$imo2NShoDValICha2rENabo2DE".toCharArray();
 
-    private CryptographyService() {
-    }
 
     public String encrypt(String property) {
 
@@ -41,9 +36,9 @@ public class CryptographyService {
         }
 
         try {
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
-            SecretKey key = keyFactory.generateSecret(new PBEKeySpec(PASSWORD));
-            Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBE_MD5_DES);
+            SecretKey key = keyFactory.generateSecret(new PBEKeySpec(PASSWORD_PHRASE));
+            Cipher pbeCipher = Cipher.getInstance(PBE_MD5_DES);
             pbeCipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
             return base64UrlEncode(pbeCipher.doFinal(property.getBytes("UTF-8")));
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
@@ -58,9 +53,9 @@ public class CryptographyService {
         }
 
         try {
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
-            SecretKey key = keyFactory.generateSecret(new PBEKeySpec(PASSWORD));
-            Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBE_MD5_DES);
+            SecretKey key = keyFactory.generateSecret(new PBEKeySpec(PASSWORD_PHRASE));
+            Cipher pbeCipher = Cipher.getInstance(PBE_MD5_DES);
             pbeCipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
             return new String(pbeCipher.doFinal(base64UrlDecode(property)), "UTF-8");
         } catch (GeneralSecurityException | UnsupportedEncodingException e) {
@@ -72,7 +67,7 @@ public class CryptographyService {
         return Base64.getUrlEncoder().encodeToString(bytes);
     }
 
-    private byte[] base64UrlDecode(String property) throws IOException {
+    private byte[] base64UrlDecode(String property) {
         return Base64.getUrlDecoder().decode(property);
     }
 

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class SimpleStorage<K extends Comparable<K>> {
 
-    SimpleStorage() {
+    public SimpleStorage() {
     }
 
     private Queue<K> entries = new ConcurrentLinkedQueue<>();
@@ -25,4 +25,6 @@ public class SimpleStorage<K extends Comparable<K>> {
     public Queue<K> retrieveAll() {
         return entries;
     }
+
+
 }
