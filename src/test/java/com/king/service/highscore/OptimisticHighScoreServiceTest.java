@@ -60,7 +60,7 @@ public class OptimisticHighScoreServiceTest {
     @Test
     public void testHighscoreBoardUpdate() throws Exception {
 
-        TestDataProvide dataProvide = new TestDataProvide();
+        TestDataProvider dataProvide = new TestDataProvider();
         List<Score> scoreList = dataProvide.scoreList;
 
         for (Integer level : dataProvide.availableLevels) {

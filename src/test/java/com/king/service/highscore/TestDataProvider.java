@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by moien on 9/12/17.
  */
-public class TestDataProvide {
+public class TestDataProvider {
 
     private List<Integer> scores = new ArrayList<>(Arrays.asList(5, 2, 12, 1, 1, 18, 15, 12, 13, 17, 3, 11, 14, 22, 21));
     private List<Integer> levelIds = new ArrayList<>(Arrays.asList(1, 1, 2, 1, 2, 2, 3, 3, 2, 1, 2, 3, 3, 3, 3));
@@ -19,7 +19,7 @@ public class TestDataProvide {
     public Map<Integer, List<String>> expectedResult;
     public List<Score> scoreList;
 
-    public TestDataProvide() {
+    public TestDataProvider() {
 
         scoreList = createListOfScores();
         expectedResult = new HashMap<>();

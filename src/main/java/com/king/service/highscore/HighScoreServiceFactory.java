@@ -41,7 +41,7 @@ public class HighScoreServiceFactory {
     public HighScoreService getHighScoreService(int maxItems, int retentionSeconds) {
 
         if (optimisticService != null) {
-            throw new AppException("NOT PERMITTED.");
+            throw new AppException("NOT PERMITTED");
         }
 
         ScoreStorageService scoreStorageService = new ScoreStorageService(new SimpleStorage<>(), retentionSeconds);
