@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * An interface for different HighScore services.
+ * An interface for HighScore services.
  * <p>
  * Created by moien on 9/11/17.
  */
