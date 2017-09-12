@@ -37,9 +37,4 @@ public class TestDataProvider {
         return scoreList;
     }
 
-    public List<Score> getScoresForLevel(List<Score> scoreList, int level) {
-        return scoreList.stream().filter(element -> element.getLevelId() == level).collect(Collectors.toList());
-    }
-
-
 }

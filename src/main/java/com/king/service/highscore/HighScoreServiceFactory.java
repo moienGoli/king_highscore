@@ -24,7 +24,7 @@ public class HighScoreServiceFactory {
     public HighScoreService getHighScoreService(int maxItems) {
 
         if (lockingService != null) {
-            throw new AppException("NOT PERMITTED.");
+            throw new AppException("NOT PERMITTED");
         }
 
         lockingService = new HighScoreServiceWithLocking(maxItems);
