@@ -84,7 +84,6 @@ public class OptimisticHighScoreServiceTest {
     @Test
     public void testAgainstHighscoreListLimit() throws Exception {
 
-
         int levelID = 1;
         when(storageService.mapScoresByUserMaxForLevel(eq(levelID), anyInt())).thenReturn(getListWithUniqueScores(levelID, maxSize + levelID));
         when(storageService.getLevels()).thenReturn(new HashSet<>(Collections.singletonList(levelID)));
