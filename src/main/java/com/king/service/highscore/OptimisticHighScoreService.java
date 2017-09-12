@@ -75,7 +75,7 @@ public class OptimisticHighScoreService implements HighScoreService {
         }
     }
 
-    public List getHighScoresForLevel(int level) {
+    public List<Score> getHighScoresForLevel(int level) {
         return scoreBoard.get(level);
     }
 
