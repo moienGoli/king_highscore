@@ -25,6 +25,12 @@ public class Score implements Comparable<Score> {
         this.creationTime = Instant.now();
     }
 
+
+    /**
+     * Two equal Score objects in this case is two scores with the same userID and levelID.
+     * The compare will tell the difference between equal Score objects
+     *
+     */
     @Override
     public boolean equals(Object o) {
 
@@ -37,8 +43,13 @@ public class Score implements Comparable<Score> {
 
     }
 
+    /**
+     * Indeed it is possible to find two different pair of integers that result in same hashcode with following algorithm.
+     * But since we will always do comparison for Scores with same levelID, we are safe for collisions.
+     */
     @Override
     public int hashCode() {
+
         int result = userId;
         result = 31 * result + levelId;
         return result;
