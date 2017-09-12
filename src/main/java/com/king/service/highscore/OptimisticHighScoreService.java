@@ -61,7 +61,7 @@ public class OptimisticHighScoreService implements HighScoreService {
     private int getLastScoreFromBoard(int level) {
 
         List<Score> scores = scoreBoard.get(level);
-        if (scores != null && !scores.isEmpty()) {
+        if (scores != null && !scores.isEmpty() && scores.size() >= maxSize) {
             return scores.get(scores.size() - 1).getScore();
         } else {
             return 0;

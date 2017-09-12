@@ -31,24 +31,31 @@ public class HighScoreServiceFactory {
     private HighScoreServiceFactory() {
     }
 
-    public HighScoreService getHighScoreService(int maxItems, int ttlSeconds) {
+    /**
+     * Creates a new high score service. Only one instance per application will be created
+     *
+     * @param maxItems maximum number of scores in highscore list
+     * @param retentionSeconds number of seconds that a score can live in storage
+     * @return
+     */
+    public HighScoreService getHighScoreService(int maxItems, int retentionSeconds) {
 
         if (optimisticService != null) {
             throw new AppException("NOT PERMITTED.");
         }
 
-        ScoreStorageService scoreStorageService = new ScoreStorageService(new SimpleStorage<>(), ttlSeconds);
+        ScoreStorageService scoreStorageService = new ScoreStorageService(new SimpleStorage<>(), retentionSeconds);
         optimisticService = new OptimisticHighScoreService(scoreStorageService, maxItems);
-        scheduleExecutor(optimisticService, scoreStorageService, ttlSeconds);
+        scheduleExecutor(optimisticService, scoreStorageService, retentionSeconds);
         return optimisticService;
 
     }
 
-    private void scheduleExecutor(OptimisticHighScoreService highScoreService, ScoreStorageService storageService, int ttl) {
+    private void scheduleExecutor(OptimisticHighScoreService highScoreService, ScoreStorageService storageService, int retentionSeconds) {
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
         executor.scheduleWithFixedDelay(highScoreService::update, 0, 100, TimeUnit.MILLISECONDS);
-        executor.scheduleWithFixedDelay(() -> storageService.retireData(3000), 0, ttl, TimeUnit.SECONDS);
+        executor.scheduleWithFixedDelay(() -> storageService.retireData(3000), 0, retentionSeconds, TimeUnit.SECONDS);
     }
 
 }
