@@ -3,10 +3,16 @@ package com.king.service.highscore;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -25,18 +31,18 @@ public class HighScoreServiceWithLockingTest {
     @Test
     public void testAddScoreWithFixedInputAndExpectedResult() throws Exception {
 
+
         int maxItems = 15;
         TestDataProvider dataProvider = new TestDataProvider();
+        List<Score> scoreList = dataProvider.scoreList;
         HighScoreServiceWithLocking highScoreService = new HighScoreServiceWithLocking(maxItems);
 
-        List<Score> scoreList = dataProvider.scoreList;
 
-
+        List<Score> highScoresForLevel;
         scoreList.forEach(highScoreService::addScore);
-        boolean match;
-        for (Map.Entry<Integer, List> entry : expectedResult.entrySet()) {
-            match = checkIfMatch(entry.getValue(), highScoreService.getHighScoresForLevel(entry.getKey()));
-            assertTrue(match);
+        for (Map.Entry<Integer, List<String>> entry : dataProvider.expectedResult.entrySet()) {
+            highScoresForLevel = highScoreService.getHighScoresForLevel(entry.getKey());
+            assertEquals(entry.getValue(), highScoresForLevel.stream().map(Object::toString).collect(Collectors.toList()));
         }
     }
 
@@ -54,29 +60,6 @@ public class HighScoreServiceWithLockingTest {
             highScoreService.addScore(new Score(i, level, i));
         }
         assertTrue(highScoreService.getHighScoresForLevel(1).size() == maxItems);
-    }
-
-    private boolean checkIfMatch(List expected, List highScoresForLevel) {
-
-        if (expected.size() != highScoresForLevel.size()) {
-            return false;
-        }
-
-        for (int i = 0; i < expected.size(); i++) {
-            if (!expected.get(i).equals(highScoresForLevel.get(i).toString())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private List<Score> createScoreList(List<Integer> userIds, List<Integer> levelIds, List<Integer> scores) {
-
-        List<Score> scoreList = new ArrayList<>();
-        for (int i = 0; i < 15; i++) {
-            scoreList.add(new Score(userIds.get(i), levelIds.get(i), scores.get(i)));
-        }
-        return scoreList;
     }
 
 }
