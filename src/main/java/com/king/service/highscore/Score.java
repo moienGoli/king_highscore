@@ -21,6 +21,11 @@ public class Score implements Comparable<Score> {
         this.score = score;
     }
 
+    /**
+     * Equal objects are those with same userID and LevelID. As a result of this implementation, TreeSet will only keep the
+     * one with bigger score number.
+     *
+     */
     @Override
     public boolean equals(Object o) {
 
@@ -34,9 +39,16 @@ public class Score implements Comparable<Score> {
     }
 
     /**
-     * if two scores are from two different users but their score number are the same, then onr will be returned.
-     * but if two equal score numbers are from same the user, zero will be returned.
-     * in other cases the result of two score number comparison will be returned
+     * If two scores are from two different users but their score number are the same, then '1' will be returned, as a result
+     * TreeSet will not eliminate any of them and will add them next to each other.
+     *
+     * If two equal score numbers are from the same user, zero will be returned, as a result TreeSet will eliminate one of them.
+     *
+     * If two scores are from one user but with different score numbers, then the compareto will compare the numbers and TreeSet will use
+     * equal method to find and eliminate the smaller one
+     *
+     * LevelID is not important in our  compareTo mechanism
+     *
      */
     public int compareTo(Score other) {
 
