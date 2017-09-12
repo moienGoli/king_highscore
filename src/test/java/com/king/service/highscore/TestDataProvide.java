@@ -15,7 +15,7 @@ public class TestDataProvide {
     private List<Integer> scores = new ArrayList<>(Arrays.asList(5, 2, 12, 1, 1, 18, 15, 12, 13, 17, 3, 11, 14, 22, 21));
     private List<Integer> levelIds = new ArrayList<>(Arrays.asList(1, 1, 2, 1, 2, 2, 3, 3, 2, 1, 2, 3, 3, 3, 3));
     private List<Integer> userIds = new ArrayList<>(Arrays.asList(12, 1, 2, 5, 12, 8, 12, 13, 5, 9, 9, 13, 20, 20, 20));
-    private List<Integer> availableLevels = new ArrayList<>(Arrays.asList(1, 2, 3));
+    public List<Integer> availableLevels = new ArrayList<>(Arrays.asList(1, 2, 3));
     public Map<Integer, List<String>> expectedResult;
     public List<Score> scoreList;
 
@@ -39,10 +39,6 @@ public class TestDataProvide {
 
     public List<Score> getScoresForLevel(List<Score> scoreList, int level) {
         return scoreList.stream().filter(element -> element.getLevelId() == level).collect(Collectors.toList());
-    }
-
-    public List<Integer> getAvailableLevels() {
-        return availableLevels;
     }
 
 

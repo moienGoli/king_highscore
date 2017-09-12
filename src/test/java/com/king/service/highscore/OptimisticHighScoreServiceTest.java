@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests the behaviour of OptimisticHighscoreService.
- *
+ * <p>
  * <p>
  * Created by moien on 9/12/17.
  */
@@ -56,7 +56,6 @@ public class OptimisticHighScoreServiceTest {
      * - Each user can only have one result in the list
      * - HighScores for each level is calculated correctly
      * - Even if the list is smaller than limit, no user can have more than one score in it
-     *
      */
     @Test
     public void testHighscoreBoardUpdate() throws Exception {
@@ -64,10 +63,10 @@ public class OptimisticHighScoreServiceTest {
         TestDataProvide dataProvide = new TestDataProvide();
         List<Score> scoreList = dataProvide.scoreList;
 
-        for (Integer level : dataProvide.getAvailableLevels()) {
+        for (Integer level : dataProvide.availableLevels) {
             when(storageService.mapScoresByUserMaxForLevel(eq(level), anyInt())).thenReturn(dataProvide.getScoresForLevel(scoreList, level));
         }
-        when(storageService.getLevels()).thenReturn(new HashSet<>(dataProvide.getAvailableLevels()));
+        when(storageService.getLevels()).thenReturn(new HashSet<>(dataProvide.availableLevels));
 
         highScoreService.update();
 
