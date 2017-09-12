@@ -32,7 +32,7 @@ public class MyHttpServer {
 
 
     private static final HTTPServerURIHelper helper = new HTTPServerURIHelper();
-    private static final HighScoreService highscoreService = HighScoreServiceFactory.getInstance().getHighScoreService(15, 3);
+    private static final HighScoreService highscoreService = HighScoreServiceFactory.getInstance().getHighScoreService(15, 10);
     private static final AuthenticationService auth = new AuthenticationService(new CryptographyService());
 
     public static void main(String[] args) throws Exception {

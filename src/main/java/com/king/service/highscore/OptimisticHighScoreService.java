@@ -1,9 +1,6 @@
 package com.king.service.highscore;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,21 +51,27 @@ public class OptimisticHighScoreService implements HighScoreService {
             initScoreBoardIfNecessary(level);
             List<Score> newEntries = storageService.mapScoresByUserMaxForLevel(level, getLastScoreFromBoard(level));
             scores = Stream.concat(scoreBoard.get(level).stream(), newEntries.stream())
-                    .sorted().distinct().limit(maxSize).collect(Collectors.toList());
-            scoreBoard.put(level, scores);
+                    .sorted().collect(Collectors.toList());
+            scoreBoard.put(level, removeDuplicatesFromSortedList(scores, maxSize));
         }
 
         return scores != null ? scores.size() : 0;
     }
 
     private int getLastScoreFromBoard(int level) {
-        return ((LinkedList<Score>) scoreBoard.get(level)).getLast().getScore();
+
+        List<Score> scores = scoreBoard.get(level);
+        if (scores != null && !scores.isEmpty()) {
+            return scores.get(scores.size() - 1).getScore();
+        } else {
+            return 0;
+        }
     }
 
     private void initScoreBoardIfNecessary(Integer level) {
 
         if (!scoreBoard.containsKey(level)) {
-            scoreBoard.put(level, new LinkedList<>());
+            scoreBoard.put(level, new ArrayList<>());
         }
     }
 
@@ -79,6 +82,22 @@ public class OptimisticHighScoreService implements HighScoreService {
     @Override
     public void addScore(Score score) {
         storageService.addScore(score);
+    }
+
+    private List<Score> removeDuplicatesFromSortedList(List<Score> scores, int limitSize) {
+
+        HashSet<Score> seen = new HashSet<>();
+        List<Score> distinctResult = new ArrayList<>();
+        for (Score score : scores) {
+            if (!seen.contains(score)) {
+                distinctResult.add(score);
+                seen.add(score);
+            }
+            if (distinctResult.size() >= limitSize) {
+                break;
+            }
+        }
+        return distinctResult;
     }
 
 }

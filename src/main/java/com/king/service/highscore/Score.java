@@ -31,11 +31,17 @@ public class Score implements Comparable<Score> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Score score = (Score) o;
+        Score other = (Score) o;
 
-        if (userId != score.userId) return false;
-        return levelId == score.levelId;
+        return userId == other.userId && levelId == other.levelId;
 
+    }
+
+    @Override
+    public int hashCode() {
+        int result = userId;
+        result = 31 * result + levelId;
+        return result;
     }
 
     public int compareTo(Score other) {

@@ -78,19 +78,21 @@ public class ScoreStorageService {
 
         Score element;
         long elapsed;
-        int loopCounter = 0;
+        int removedCount = 0;
+        int loopCounter = batchSize;
         Instant now = Instant.now();
 
-        while (loopCounter <= batchSize) {
+        while (loopCounter > 0) {
             element = scores.peek();
             if (element != null) {
                 elapsed = Duration.between(element.getCreationTime(), now).getSeconds();
                 if (elapsed > retentionSeconds) {
                     scores.remove();
+                    removedCount++;
                 }
             }
-            loopCounter++;
+            loopCounter--;
         }
-        return loopCounter;
+        return removedCount;
     }
 }

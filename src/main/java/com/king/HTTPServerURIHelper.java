@@ -12,10 +12,12 @@ import java.util.regex.Pattern;
  */
 public class HTTPServerURIHelper {
 
-    private final Pattern loginPattern = Pattern.compile("/([0-9]*)/login[//]*$");
-    private final Pattern scorePostPattern = Pattern.compile("/([0-9]*)/score");
-    private final Pattern sessionKeyPattern = Pattern.compile("sessionKey=(.{5,})");
-    private final Pattern highScoreListPattern = Pattern.compile("/([0-9]*)/highscorelist[//]*$");
+    private static final Pattern loginPattern = Pattern.compile("/([0-9]*)/login[//]*$");
+    private static final Pattern scorePostPattern = Pattern.compile("/([0-9]*)/score");
+    private static final Pattern sessionKeyPattern = Pattern.compile("sessionKey=(.{5,})");
+    private static final Pattern highScoreListPattern = Pattern.compile("/([0-9]*)/highscorelist[//]*$");
+    private static final String MALFORMED_INPUT = "Malformed Input";
+
 
     public ServiceName getService(String uri) {
 
@@ -23,7 +25,7 @@ public class HTTPServerURIHelper {
             return ServiceName.HIGHSCORE;
         } else if (uri.contains("score")) {
             return ServiceName.SCORE;
-        } else if (uri.contains("score")) {
+        } else if (uri.contains("login")) {
             return ServiceName.LOGIN;
         }
         return null;
@@ -35,7 +37,7 @@ public class HTTPServerURIHelper {
         if (matcher.find()) {
             return Integer.parseInt(matcher.group(1));
         } else {
-            throw new AppException("Malformed Input");
+            throw new AppException(MALFORMED_INPUT);
         }
     }
 
@@ -45,7 +47,7 @@ public class HTTPServerURIHelper {
         if (matcher.find()) {
             return Integer.parseInt(matcher.group(1));
         } else {
-            throw new AppException("Malformed Input");
+            throw new AppException(MALFORMED_INPUT);
         }
     }
 
@@ -55,7 +57,7 @@ public class HTTPServerURIHelper {
         if (matcher.find()) {
             return matcher.group(1);
         } else {
-            throw new AppException("Malformed Input");
+            throw new AppException(MALFORMED_INPUT);
         }
 
     }
@@ -66,11 +68,11 @@ public class HTTPServerURIHelper {
         if (matcher.find()) {
             return Integer.parseInt(matcher.group(1));
         } else {
-            throw new AppException("Malformed Input");
+            throw new AppException(MALFORMED_INPUT);
         }
     }
 
     enum ServiceName {
-        HIGHSCORE, LOGIN, SCORE;
+        HIGHSCORE, LOGIN, SCORE
     }
 }
