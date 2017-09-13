@@ -72,7 +72,7 @@ public class MyHttpServer {
             } catch (AppException e) {
                 Logger.log(e.getMessage());
                 responseCode = 400;
-                response = e.getMessage();
+                response = e.getMessage() + uri;
             } catch (Exception e) {
                 Logger.log(e.getMessage());
                 responseCode = 500;
