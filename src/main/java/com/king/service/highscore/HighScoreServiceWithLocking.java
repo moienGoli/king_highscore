@@ -9,8 +9,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * <p>
  * I am using data structures that support concurrency.
  * Every score is getting served and the scoreBoard is being updated on the arrival of each score.
- * This approach may cause bottleneck in huge loads, but it wont crash since it has handled memory consumption and
- * as a result of the bottleneck the response time will increase and the system will become lazy.
+ * This approach may cause bottleneck in huge loads, but it wont crash since it has handled memory consumption.
+ * As a result of the bottleneck the response time will increase and the system will become lazy.
  * <p>
  * This approach is meant to be consistent
  * <p>

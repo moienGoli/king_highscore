@@ -21,6 +21,13 @@ public class HighScoreServiceFactory {
     private HighScoreServiceFactory() {
     }
 
+    /**
+     * only one highScore service is allowed per application.
+     * requesting more will denied by exception throwing
+     *
+     * @param maxItems maximum allowed items into highscore list
+     * @return a new highscore service
+     */
     public HighScoreService getHighScoreService(int maxItems) {
 
         if (lockingService != null) {
