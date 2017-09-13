@@ -1,7 +1,6 @@
 package com.king.service.highscore;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Holds test data for OptimisticHighScoreServiceTest
@@ -12,12 +11,12 @@ import java.util.stream.Collectors;
  */
 public class TestDataProvider {
 
-    private List<Integer> scores = new ArrayList<>(Arrays.asList(5, 2, 12, 1, 1, 18, 15, 12, 13, 17, 3, 11, 14, 22, 21));
-    private List<Integer> levelIds = new ArrayList<>(Arrays.asList(1, 1, 2, 1, 2, 2, 3, 3, 2, 1, 2, 3, 3, 3, 3));
-    private List<Integer> userIds = new ArrayList<>(Arrays.asList(12, 1, 2, 5, 12, 8, 12, 13, 5, 9, 9, 13, 20, 20, 20));
     public List<Integer> availableLevels = new ArrayList<>(Arrays.asList(1, 2, 3));
     public Map<Integer, List<String>> expectedResult;
     public List<Score> scoreList;
+    private List<Integer> scores = new ArrayList<>(Arrays.asList(5, 2, 12, 1, 1, 18, 15, 12, 13, 17, 3, 11, 14, 22, 21));
+    private List<Integer> levelIds = new ArrayList<>(Arrays.asList(1, 1, 2, 1, 2, 2, 3, 3, 2, 1, 2, 3, 3, 3, 3));
+    private List<Integer> userIds = new ArrayList<>(Arrays.asList(12, 1, 2, 5, 12, 8, 12, 13, 5, 9, 9, 13, 20, 20, 20));
 
     public TestDataProvider() {
 

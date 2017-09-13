@@ -15,20 +15,17 @@ import static org.junit.Assert.assertTrue;
  */
 public class HTTPServerURIHelperTest {
 
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
     private int userID = 123;
     private int levelID = 521;
     private String sessionKey = "OohMy";
-
     private String GOOD_HIGHSCORE_URI = "http://locahost:9090/" + levelID + "/highscorelist";
     private String GOOD_LOGIN_URI = "http://locahost:9090/" + userID + "/login";
     private String GOOD_SCORE_POST_URI = "http://locahost:9090/" + levelID + "/score?sessionKey=" + sessionKey;
     private String BAD_SCORE_POST_URI = "http://locahost:9090/notInt/score?key=" + sessionKey;
     private String malformedMsg = "Malformed";
-
     private HTTPServerURIHelper helper = new HTTPServerURIHelper();
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     @Test
     public void testGetService() throws Exception {

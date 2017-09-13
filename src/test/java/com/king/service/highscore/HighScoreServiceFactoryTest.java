@@ -5,8 +5,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.*;
-
 /**
  * Just testing that the factory should not create more than one instance of HighScoreService
  * Created by moien on 9/13/17.

@@ -4,7 +4,7 @@ package com.king.service.highscore;
  * Encapsulates information of what we call score:
  * - userId
  * - levelId
- * - score
+ * - point
  * <p>
  * Created by moien on 9/8/17.
  */
@@ -12,19 +12,18 @@ public class Score implements Comparable<Score> {
 
     private final int userId;
     private final int levelId;
-    private final int score;
+    private final int point;
 
-    public Score(int userId, int levelId, int score) {
+    public Score(int userId, int levelId, int point) {
 
         this.userId = userId;
         this.levelId = levelId;
-        this.score = score;
+        this.point = point;
     }
 
     /**
      * Equal objects are those with same userID and LevelID. As a result of this implementation, TreeSet will only keep the
-     * one with bigger score number.
-     *
+     * one with bigger point.
      */
     @Override
     public boolean equals(Object o) {
@@ -32,43 +31,48 @@ public class Score implements Comparable<Score> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Score score = (Score) o;
+        Score other = (Score) o;
 
-        return userId == score.userId && levelId == score.levelId;
+        return userId == other.userId && levelId == other.levelId;
 
     }
 
+    @Override
+    public int hashCode() {
+
+        int result = userId;
+        result = 31 * result + levelId;
+        return result;
+    }
+
     /**
-     * If two scores are from two different users but their score number are the same, then '1' will be returned, as a result
+     * If two scores are from two different users but their points are the same, then '1' will be returned, as a result
      * TreeSet will not eliminate any of them and will add them next to each other.
-     *
-     * If two equal score numbers are from the same user, zero will be returned despite the levelID, as a result TreeSet will eliminate one of them.
-     *
-     * If two scores are from one user but with different score numbers, then the compareTo will compare the numbers and TreeSet will use
+     * <p>
+     * If two equal point are from the same user, zero will be returned despite the levelID, as a result TreeSet will eliminate one of them.
+     * <p>
+     * If two scores are from one user but with different point, then the compareTo will compare the numbers and TreeSet will use
      * equal method to find and eliminate the smaller one
-     *
-     * To make the descending order, the compareTo is doing Integer.compare(other.score, this.score);
-     *
+     * <p>
+     * To make the descending order, the compareTo is doing Integer.compare(other.point, this.point);
+     * <p>
      * LevelID is not important in our  compareTo mechanism
-     *
      */
     public int compareTo(Score other) {
 
         if (other == null) {
             return 1;
         } else {
-            int scoreCompare = Integer.compare(other.score, this.score);
-            if (scoreCompare == 0) {
-                if (this.userId != other.userId) {
-                    return 1;
-                }
+            int scoreCompare = Integer.compare(other.point, this.point);
+            if (scoreCompare == 0 && this.userId != other.userId) {
+                return 1;
             }
             return scoreCompare;
         }
     }
 
-    public int getScore() {
-        return score;
+    public int getPoint() {
+        return point;
     }
 
     public int getLevelId() {
@@ -80,6 +84,6 @@ public class Score implements Comparable<Score> {
     }
 
     public String toString() {
-        return userId + "=" + score;
+        return userId + "=" + point;
     }
 }

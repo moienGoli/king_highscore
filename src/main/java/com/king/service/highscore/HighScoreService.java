@@ -1,6 +1,5 @@
 package com.king.service.highscore;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**

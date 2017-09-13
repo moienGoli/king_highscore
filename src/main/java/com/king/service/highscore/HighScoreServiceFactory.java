@@ -11,14 +11,14 @@ import com.king.exception.AppException;
 public class HighScoreServiceFactory {
 
 
-    private HighScoreServiceWithLocking lockingService;
     private static final HighScoreServiceFactory FACTORY = new HighScoreServiceFactory();
+    private HighScoreServiceWithLocking lockingService;
+
+    private HighScoreServiceFactory() {
+    }
 
     public static HighScoreServiceFactory getInstance() {
         return FACTORY;
-    }
-
-    private HighScoreServiceFactory() {
     }
 
     /**
