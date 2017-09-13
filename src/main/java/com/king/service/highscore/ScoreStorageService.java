@@ -10,15 +10,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * This is a part of OPTIMISTIC APPROACH implementation
- * Runs around SimpleStorage and adds some querying capabilities.
+ * Works with SimpleStorage and adds some querying capabilities.
  * For querying I have used Java 8 streams to filter, map and collect data from Simple storage.
  * <p>
- * About retention seconds: because of memory consumption every score has a limited seconds to stay in the data store.
- * after expiring, the score wont be present in queries and eventually will be wiped out.
- * One of the challenges of the Optimistic approach is to find a good retention seconds to limit
- * and hopefully eliminating the chance of 'UnNotice Score'. UnNotices scores are those who have
- * wiped out before even getting processed.
+ * About retention seconds: because of memory consumption every object has a limited seconds to stay in the data store.
+ * after expiring, the object wont be present in queries and eventually will be wiped out.
+ * One of the challenges of the Optimistic approach is to find a good retention seconds to limit  and hopefully eliminating the chance of 'UnNotice Score'.
+ * UnNotices scores are those who have wiped out before even getting processed.
  * <p>
  * Created by moien on 9/10/17.
  */
@@ -72,6 +70,13 @@ public class ScoreStorageService {
         return levels;
     }
 
+
+    /**
+     * Iterates the storage and remove the old objects
+     *
+     * @param batchSize number of objects that will examined and may get removed in one cycle
+     * @return the number of removed objects
+     */
     protected int retireData(int batchSize) {
 
         Queue<Score> scores = store.retrieveAll();

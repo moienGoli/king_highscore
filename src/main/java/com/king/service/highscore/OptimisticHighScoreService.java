@@ -8,28 +8,22 @@ import java.util.stream.Stream;
  * OPTIMISTIC APPROACH
  * This can be described as below:
  * - Scores are stored in an stream.
- * - every few seconds or so, will run a query on the stream and find the candidates,
- * candidates: whom are not expired and they are higher than level's minimum highscore
+ * - every few seconds or so, a query will run on the stream and find the candidates, candidates: whom are not expired and they are higher than level's minimum highscore
  * - a list of candidates will be merged with current high scores of the level and result will be sorted and duplicates will get removed.
- * - the collect&update operation will run periodically.
+ * - the update operation will run periodically.
  * <p>
  * The benefits of this approach could be:
  * - The score receive/store and process are separated, so it is much easier to scale based on where the pressure is.
- * - When receiving the score, the least possible operation is being done, so the response time in this section will not be much affected
- * by number of requests
+ * - When receiving the score, the least possible operation is being done, so the response time in this section will not be much affected by number of requests
  * - The process of updating the HighscoreList will not be affected by number of requests.
  * - The process of updating the HighscoreList is not a case of concurrency and and corresponding challenges
  * <p>
  * But there are some down points for this approach:
  * - There might be a memory problem in DataStore if the consumer became lazy.
  * - There might be an 'UnNotice Score' problem. UnNotices scores are those who have wiped out before even getting processed.
- * - This approach may not be as accurate as the HighScoreServiceWithLocking approach, but it is eventually consistent and most of the times
- * it is as consistent as HighScoreServiceWithLocking.
+ * - This approach may not be as accurate as the HighScoreServiceWithLocking approach, but it is eventually consistent and most of the times it is as accurate as HighScoreServiceWithLocking.
  * <p>
- * In conclusion this approach should be configured delicately and there should be a back pressure mechanism to avoid outOfMemory exception in
- * case of insane load.
- * <p>
- * <p>
+ * In conclusion this approach should be configured delicately and there should be a back pressure mechanism to avoid outOfMemory exception in case of insane load or load spikes.
  * <p>
  * Created by moien on 9/10/17.
  */
@@ -48,7 +42,7 @@ public class OptimisticHighScoreService implements HighScoreService {
      * Get high scores from the storage and merge them with current high scores and creates a sorted list.
      * Only new scores that are greater than the score in highScore[limit-1] will be participate in update process.
      *
-     * @return
+     * @return the number of scores that retrieved from storage
      */
     protected int update() {
 
@@ -91,7 +85,7 @@ public class OptimisticHighScoreService implements HighScoreService {
     }
 
     /**
-     * The score will be added to in memory storage
+     * The score will be added in memory storage
      *
      * @param score The new score that we have received
      */
@@ -100,6 +94,10 @@ public class OptimisticHighScoreService implements HighScoreService {
         storageService.addScore(score);
     }
 
+    // Apparently the distinct function of Stream is working in mysterious ways.
+    // And there should be a compatible hashCode, compareTo and equals method to make it work.
+    // So I am using my own approach till I find a workaround.
+    // I posted a SO question to see if anyone has an answer
     private List<Score> removeDuplicatesFromSortedList(List<Score> scores, int limitSize) {
 
         HashSet<Score> seen = new HashSet<>();

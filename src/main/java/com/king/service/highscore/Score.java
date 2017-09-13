@@ -27,9 +27,8 @@ public class Score implements Comparable<Score> {
 
 
     /**
-     * Two equal Score objects in this case is two scores with the same userID and levelID.
-     * The compare will tell the difference between equal Score objects
-     *
+     * Two equal objects in this case is two objects with the same userID and levelID.
+     * The compareTo method will tell the difference between two equal objects
      */
     @Override
     public boolean equals(Object o) {
@@ -38,14 +37,13 @@ public class Score implements Comparable<Score> {
         if (o == null || getClass() != o.getClass()) return false;
 
         Score other = (Score) o;
-
         return userId == other.userId && levelId == other.levelId;
 
     }
 
     /**
      * Indeed it is possible to find two different pair of integers that result in same hashcode with following algorithm.
-     * But since we will always do comparison for Scores with same levelID, we are safe for collisions.
+     * But since we will always do comparison for objects with same levelID, we are safe for collisions.
      */
     @Override
     public int hashCode() {

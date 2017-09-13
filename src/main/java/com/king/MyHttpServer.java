@@ -46,6 +46,8 @@ public class MyHttpServer {
     private static class RequestHandler implements HttpHandler {
 
         private static final int SESSION_TTL_SECONDS = 600;
+        private static final String MALFORMED_URI = "Malformed URI";
+
 
         public void handle(HttpExchange http) throws IOException {
 
@@ -55,12 +57,17 @@ public class MyHttpServer {
 
             try {
                 HTTPServerURIHelper.ServiceName service = helper.getService(uri);
+                if (service == null) {
+                    throw new AppException(MALFORMED_URI);
+                }
                 if (service.equals(ServiceName.SCORE)) {
                     handleScorePost(http, uri);
                 } else if (service.equals(ServiceName.HIGHSCORE)) {
                     response = handleHighScoreRequest(uri);
                 } else if (service.equals(ServiceName.LOGIN)) {
                     response = handleLoginRequest(uri);
+                } else {
+                    throw new AppException(MALFORMED_URI);
                 }
             } catch (AppException e) {
                 Logger.log(e.getMessage());
