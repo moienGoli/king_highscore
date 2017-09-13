@@ -44,6 +44,12 @@ public class OptimisticHighScoreService implements HighScoreService {
         this.maxSize = maxSize;
     }
 
+    /**
+     * Get high scores from the storage and merge them with current high scores and creates a sorted list.
+     * Only new scores that are greater than the score in highScore[limit-1] will be participate in update process.
+     *
+     * @return
+     */
     protected int update() {
 
         List<Score> scores = null;
@@ -75,10 +81,20 @@ public class OptimisticHighScoreService implements HighScoreService {
         }
     }
 
+    /**
+     *
+     * @param level the level that you want high scores for
+     * @return desc sorted list of high scores
+     */
     public List<Score> getHighScoresForLevel(int level) {
         return scoreBoard.get(level);
     }
 
+    /**
+     * The score will be added to in memory storage
+     *
+     * @param score The new score that we have received
+     */
     @Override
     public void addScore(Score score) {
         storageService.addScore(score);
