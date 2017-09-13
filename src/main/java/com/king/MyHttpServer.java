@@ -101,11 +101,15 @@ public class MyHttpServer {
             String sessionKey = helper.getSessionKeyFromScorePostURI(uri);
             int userID = auth.getUserID(sessionKey);
             Scanner s = new Scanner(t.getRequestBody());
-            int score = 0;
+            int score;
             if (s.hasNext()) {
                 score = s.nextInt();
+            } else {
+                throw new AppException("No payload");
             }
-            highscoreService.addScore(new Score(userID, levelID, score));
+            if (score > 0) {
+                highscoreService.addScore(new Score(userID, levelID, score));
+            }
         }
     }
 
