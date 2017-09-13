@@ -72,11 +72,11 @@ public class MyHttpServer {
             } catch (AppException e) {
                 Logger.log(e.getMessage() + " Request: " + uri);
                 responseCode = 400;
-                response = e.getMessage();
+                response = e.getMessage() + " Request: " + uri;
             } catch (Exception e) {
-                Logger.log(e.getMessage());
+                Logger.log(e.getMessage() + " Request: " + uri);
                 responseCode = 500;
-                response = e.getMessage();
+                response = e.getMessage() + " Request: " + uri;
             }
 
             http.sendResponseHeaders(responseCode, response.length());
@@ -94,7 +94,8 @@ public class MyHttpServer {
         private String handleHighScoreRequest(String uri) {
 
             int levelId = helper.getLevelIDFromHighScoreURI(uri);
-            return highscoreService.getHighScoresForLevel(levelId).toString();
+            String response = highscoreService.getHighScoresForLevel(levelId).toString();
+            return response.replace("[", "").replace("]", "");
         }
 
         private void handleScorePost(HttpExchange t, String uri) {
