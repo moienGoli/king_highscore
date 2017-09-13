@@ -80,7 +80,12 @@ public class OptimisticHighScoreService implements HighScoreService {
      * @return desc sorted list of high scores
      */
     public List<Score> getHighScoresForLevel(int level) {
-        return scoreBoard.get(level);
+
+        List<Score> scoreList = scoreBoard.get(level);
+        if (scoreList == null) {
+            return Collections.emptyList();
+        }
+        return scoreList;
     }
 
     /**
