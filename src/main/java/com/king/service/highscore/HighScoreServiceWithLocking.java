@@ -26,6 +26,21 @@ public class HighScoreServiceWithLocking implements HighScoreService {
         this.maxItems = maxItems;
     }
 
+    /**
+     * If there is already a higher score from the user in the list, this score will not inserted, but if this score is higher
+     * than what user already has here, this will be replaced with that.
+     *
+     * If there is not a highscore from the user in the list, and the highscore list size limit has not reached, this score will
+     * be inserted no matter what, but if the limit has reached and this score is smaller than all of them, it will not get inserted.
+     *
+     * In other cases this score wll get inserted in its place and the list will remain sorted.
+     *
+     * note: there is a chance of overlap of scores in this implementation but it is limited to the scores of a same user,
+     * in the real world it is almost impossible that same user post a score for the same level that fast. But if this is the case
+     * we should add a sync block to this method.
+     *
+     * @param score the new arrived score
+     */
     public void addScore(Score score) {
 
         initScoresForLevelIfNeeded(score.getLevelId());
@@ -55,6 +70,12 @@ public class HighScoreServiceWithLocking implements HighScoreService {
         }
     }
 
+    /**
+     * Get the scores for level and iterate them while inserting into a list
+     *
+     * @param level the integer levelID that you want to retrieve high scores for it.
+     * @return list of desc sorted contains top highscores
+     */
     public List getHighScoresForLevel(int level) {
 
         ConcurrentSkipListSet<Score> scores = scoreBoard.get(level);
