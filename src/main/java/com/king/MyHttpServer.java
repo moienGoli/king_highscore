@@ -69,14 +69,11 @@ public class MyHttpServer {
                 } else {
                     throw new AppException(MALFORMED_URI_MSG);
                 }
-            } catch (AppException e) {
-                Logger.log(e.getMessage() + " Request: " + uri);
-                responseCode = 400;
-                response = e.getMessage() + " Request: " + uri;
             } catch (Exception e) {
-                Logger.log(e.getMessage() + " Request: " + uri);
-                responseCode = 500;
-                response = e.getMessage() + " Request: " + uri;
+                String msg = e.getMessage() + " Request: " + uri;
+                Logger.log(msg);
+                response = msg;
+                responseCode = 400;
             }
 
             http.sendResponseHeaders(responseCode, response.length());
