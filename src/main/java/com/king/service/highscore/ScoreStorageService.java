@@ -57,9 +57,9 @@ public class ScoreStorageService {
         return store.retrieveAll().parallelStream().
                 filter(element -> Duration.between(element.getCreationTime(), now).getSeconds() < retentionSeconds).
                 filter(element -> element.getLevelId() == level).
-                filter(element -> element.getScore() > minScore).
+                filter(element -> element.getPoint() > minScore).
                 collect(Collectors.toMap(Score::getUserId, Function.identity(),
-                        BinaryOperator.maxBy(Comparator.comparingInt(Score::getScore)))
+                        BinaryOperator.maxBy(Comparator.comparingInt(Score::getPoint)))
                 ).values().stream().collect(Collectors.toList());
     }
 

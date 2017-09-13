@@ -21,22 +21,22 @@ import java.util.concurrent.TimeUnit;
 public class HighScoreServiceFactory {
 
 
-    private OptimisticHighScoreService optimisticService;
     private static final HighScoreServiceFactory FACTORY = new HighScoreServiceFactory();
+    private OptimisticHighScoreService optimisticService;
+
+    private HighScoreServiceFactory() {
+    }
 
     public static HighScoreServiceFactory getInstance() {
         return FACTORY;
     }
 
-    private HighScoreServiceFactory() {
-    }
-
     /**
      * Creates a new high score service. Only one instance per application will be created
      *
-     * @param maxItems maximum number of scores in highscore list
+     * @param maxItems         maximum number of scores in highscore list
      * @param retentionSeconds number of seconds that a score can live in storage
-     * @return
+     * @return A new Highscore service
      */
     public HighScoreService getHighScoreService(int maxItems, int retentionSeconds) {
 

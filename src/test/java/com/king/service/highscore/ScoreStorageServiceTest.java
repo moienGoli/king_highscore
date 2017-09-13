@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests score storage functionality
- *
+ * <p>
  * Created by moien on 9/12/17.
  */
 

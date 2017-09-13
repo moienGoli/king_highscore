@@ -3,10 +3,10 @@ package com.king.service.highscore;
 import java.time.Instant;
 
 /**
- * Encapsulates information of what we call score:
+ * Encapsulates information of what we call point:
  * - userId
  * - levelId
- * - score
+ * - point
  * <p>
  * Created by moien on 9/8/17.
  */
@@ -14,14 +14,14 @@ public class Score implements Comparable<Score> {
 
     private final int userId;
     private final int levelId;
-    private final int score;
+    private final int point;
     private final Instant creationTime;
 
-    public Score(int userId, int levelId, int score) {
+    public Score(int userId, int levelId, int point) {
 
         this.userId = userId;
         this.levelId = levelId;
-        this.score = score;
+        this.point = point;
         this.creationTime = Instant.now();
     }
 
@@ -58,13 +58,13 @@ public class Score implements Comparable<Score> {
         if (other == null) {
             return 1;
         } else {
-            return Integer.compare(other.score, this.score);
+            return Integer.compare(other.point, this.point);
         }
 
     }
 
-    public int getScore() {
-        return score;
+    public int getPoint() {
+        return point;
     }
 
     public int getLevelId() {
@@ -80,6 +80,6 @@ public class Score implements Comparable<Score> {
     }
 
     public String toString() {
-        return userId + "=" + score;
+        return userId + "=" + point;
     }
 }

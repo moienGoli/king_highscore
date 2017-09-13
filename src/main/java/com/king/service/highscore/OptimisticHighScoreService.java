@@ -62,7 +62,7 @@ public class OptimisticHighScoreService implements HighScoreService {
 
         List<Score> scores = scoreBoard.get(level);
         if (scores != null && !scores.isEmpty() && scores.size() >= maxSize) {
-            return scores.get(scores.size() - 1).getScore();
+            return scores.get(scores.size() - 1).getPoint();
         } else {
             return 0;
         }
@@ -76,7 +76,6 @@ public class OptimisticHighScoreService implements HighScoreService {
     }
 
     /**
-     *
      * @param level the level that you want high scores for
      * @return desc sorted list of high scores
      */

@@ -69,14 +69,11 @@ public class MyHttpServer {
                 } else {
                     throw new AppException(MALFORMED_URI);
                 }
-            } catch (AppException e) {
-                Logger.log(e.getMessage() + " Request: " + uri);
-                responseCode = 400;
-                response = e.getMessage() + " Request: " + uri;
             } catch (Exception e) {
-                Logger.log(e.getMessage() + " Request: " + uri);
-                responseCode = 500;
-                response = e.getMessage() + " Request: " + uri;
+                String msg = e.getMessage() + " Request: " + uri;
+                Logger.log(msg);
+                response = msg;
+                responseCode = 400;
             }
 
             http.sendResponseHeaders(responseCode, response.length());
@@ -104,11 +101,11 @@ public class MyHttpServer {
             String sessionKey = helper.getSessionKeyFromScorePostURI(uri);
             int userID = auth.getUserID(sessionKey);
             Scanner s = new Scanner(t.getRequestBody());
-            int score = 0;
+            int point = 0;
             if (s.hasNext()) {
-                score = s.nextInt();
+                point = s.nextInt();
             }
-            highscoreService.addScore(new Score(userID, levelID, score));
+            highscoreService.addScore(new Score(userID, levelID, point));
         }
     }
 
